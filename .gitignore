@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.idea
 .Python
 env/
 build/
@@ -24,6 +25,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*.zip
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -34,6 +36,7 @@ wheels/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+fonts_test.txt
 
 # Unit test / coverage reports
 htmlcov/

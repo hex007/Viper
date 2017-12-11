@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings>
+
+    <!-- PC Settings -->
+    <gamelists_dir>~/roms</gamelists_dir>
+    <systems_conf>~/.emulationstation/es_systems.cfg</systems_conf>
+
+    <!-- Pi Settings -->
+
+    <!--<gamelists_dir>~/.emulationstation/gamelists</gamelists_dir>-->
+    <!--<systems_conf>/etc/emulationstation/es_systems.cfg</systems_conf>-->
+
+
+    <!-- Controls -->
+    <a>6</a>
+    <b>2</b>
+    <x>8</x>
+    <y>4</y>
+
+    <select>&#10;</select>
+
+</settings>

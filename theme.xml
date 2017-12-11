@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<theme>
+    <colors>
+        <!-- User editable hex colors :
+                They represent internal color code (commented alongside).
+                The value represents Hex color value as RRGGBB (editable to choice/theme-able).
+                define your colors here
+        -->
+        <color code="0" value="222222"/> <!-- k: black -->
+        <color code="1" value="CC0000"/> <!-- r: darkred -->
+        <color code="2" value="388E3C"/> <!-- g: darkgreen -->
+        <color code="3" value="C4A000"/> <!-- y: darkyellow -->
+        <color code="4" value="3465A4"/> <!-- b: darkblue -->
+        <color code="5" value="75507B"/> <!-- m: darkmagenta -->
+        <color code="6" value="06989A"/> <!-- c: darkcyan -->
+        <color code="7" value="D3D7CF"/> <!-- w: lightgrey -->
+
+        <!-- Bold Colors :
+                To use bold colors for foreground set bold tag to true
+
+                To use bold colors for background reverse FG and BG colors
+                and combine it with bold and inverse tags as true
+        -->
+        <color code="8" value="555753"/> <!-- darkgrey -->
+        <color code="9" value="EF2929"/> <!-- red -->
+        <color code="A" value="8AE234"/> <!-- green -->
+        <color code="B" value="FCE94F"/> <!-- yellow -->
+        <color code="C" value="729FCF"/> <!-- blue -->
+        <color code="D" value="AD7FA8"/> <!-- magenta -->
+        <color code="E" value="34E2E2"/> <!-- cyan -->
+        <color code="F" value="EEEEEC"/> <!-- white -->
+    </colors>
+
+    <carousel>
+        <!-- View Style refers to the style of the carousel:
+                list : Vertical list for systems available
+                page : Single system with description from about.xml
+        -->
+        <view_style>detail</view_style> <!-- list / detail -->
+        <color_style>system</color_style> <!-- common / system -->
+        <fg>w</fg>
+        <bg>b</bg>
+        <bold>false</bold>
+        <inverse>false</inverse>
+    </carousel>
+
+    <sys_colors>
+        <!-- System specific color :
+                Value of name tag should be the system name from roms folder.
+
+                NOTE: Always define a default color for systems not defined below
+        -->
+        <system name="pc" fg="r" bg="w" bold="false" inverse="false"/>
+        <system name="gb" fg="g" bg="w" bold="false" inverse="false"/>
+        <system name="gba" fg="m" bg="w" bold="false" inverse="false"/>
+        <system name="gbc" fg="b" bg="w" bold="false" inverse="false"/>
+        <system name="nes" fg="r" bg="w" bold="false" inverse="false"/>
+        <system name="snes" fg="b" bg="w" bold="false" inverse="false"/>
+        <system name="megadrive" fg="c" bg="w" bold="false" inverse="false"/>
+        <system name="retropie" fg="w" bg="r" bold="true" inverse="false"/>
+
+
+        <system name="default" fg="w" bg="k" bold="true" inverse="false"/>
+    </sys_colors>
+</theme>
