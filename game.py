@@ -23,5 +23,15 @@ class Game(object):
         return "%s : %s" % (self.system, self.name)
 
 
+    def __cmp__(self, other):
+        """
+        :type other: Game
+        """
+
+        if isinstance(other, Game):
+            return cmp(self.name, other.name)
+        else:
+            return cmp(self.name, other)
+
     def launch(self):
         pass

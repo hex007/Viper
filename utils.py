@@ -91,6 +91,7 @@ def _parse_gamelist_trees(trees, systems_conf):
             systems_list.append(
                     System(root, trees[root], sys_d['name'], path.expanduser(sys_d['path']), sys_d['command'])
             )
+    systems_list.sort()
     return systems_list
 
 

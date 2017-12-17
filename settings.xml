@@ -23,7 +23,7 @@
 
     <!-- Joystick Controls -->
     <joystick>
-        <device>/dev/input/js1</device>
+        <device>/dev/input/js0</device>
         <a>1</a>
         <b>2</b>
 

@@ -5,7 +5,6 @@
 # `--(Viper ... renderer)-->
 import curses
 from random import choice
-from time import sleep
 
 from input_types import KEY
 
