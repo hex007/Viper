@@ -23,7 +23,7 @@ def load_settings():
         return {}
 
     tree = ET.parse(settings_file)
-    root = et_leaf_to_dict(tree.getroot())
+    root = {node.tag: node.text if not node.getchildren() else et_leaf_to_dict(node) for node in tree.getroot()}
     return root
 
 

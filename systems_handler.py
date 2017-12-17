@@ -11,6 +11,8 @@ from os import path
 import fonts
 import renderer
 from gamelist_handler import GamelistHandler
+from handler import Handler
+from input_types import KEY
 from menu_handler import MenuHandler
 from theme_handler import get_carousel_color, is_detailed_view
 from utils import et_leaf_to_dict
@@ -19,7 +21,7 @@ from utils import et_leaf_to_dict
 __tag__ = 'systems_handler'
 
 
-class SystemsHandler(object):
+class SystemsHandler(Handler):
     """Load systems, gamelists, and accompanying windows"""
 
 
@@ -33,11 +35,11 @@ class SystemsHandler(object):
         self.sys_focused = systems[self.render_sys] if len(systems) else None
         self.lines = int(ceil(curses.LINES / 3.0))
         self.abouts = None
-        self.load_abouts()
+        self._load_abouts()
         pass
 
 
-    def input(self, key, keymap):
+    def input(self, key):
         """Handle current key press.
         :return new handler if new handler needs to be loaded
         """
@@ -48,14 +50,14 @@ class SystemsHandler(object):
         if self.sys_focused is None:
             return self  # no gamelist available to load
 
-        if key == ord(keymap['a']):
+        if key == KEY.A:
             return GamelistHandler(self.sys_focused)
-        if key == ord(keymap['select']):  # Enter
+        if key == KEY.START:  # Enter
             return MenuHandler()
 
-        if key in (curses.KEY_RIGHT, curses.KEY_DOWN):
+        if key in (KEY.RIGHT, KEY.DOWN):
             self.render_sys = (self.render_sys + 1) % len(self.systems)
-        elif key in (curses.KEY_LEFT, curses.KEY_UP):
+        elif key in (KEY.LEFT, KEY.UP):
             self.render_sys = (self.render_sys - 1) if self.render_sys > 0 else (len(self.systems) - 1)
 
         self.sys_focused = self.systems[self.render_sys]
@@ -66,17 +68,17 @@ class SystemsHandler(object):
          required to call refresh to show any updates made.
          """
         self.window.erase()
-        self.draw_systems()
+        self._draw_systems()
         self.window.refresh()
         pass
 
 
-    def draw_systems(self):
+    def _draw_systems(self):
         """Page-wise list scrolling
         Decide on the range of systems to show and print them.
         """
         if is_detailed_view():
-            self.draw_single_system()
+            self._draw_single_system()
         else:
             self.window.bkgd(get_carousel_color())
             # todo : proper scrolling implementation
@@ -90,11 +92,11 @@ class SystemsHandler(object):
                 m = self.lines * (self.render_sys / self.lines)
                 n = min(m + self.lines, len(self.systems))
                 systems = self.systems[m:n]
-            self.draw_range(systems)
+            self._draw_range(systems)
         pass
 
 
-    def draw_range(self, systems):
+    def _draw_range(self, systems):
         """Print a range of systems using fancy fonts."""
         x = 0
         v_offset = 0
@@ -105,7 +107,7 @@ class SystemsHandler(object):
                         color=get_carousel_color(system.name), width=curses.COLS, pad=1)
 
 
-    def draw_single_system(self):
+    def _draw_single_system(self):
         """Draw a single system spanning the entire page aka detailed sys view"""
         # Handle empty gamelists
         if self.sys_focused is None:
@@ -123,8 +125,8 @@ class SystemsHandler(object):
         height = curses.LINES - y - 2
 
         about_win = self.window.subwin(height, width, y, x)
-        about_win.addstr(1, 0, self.get_about(name, width)[0:width * (height - 1) - 1])
-        about_win.addstr(0, 0, ("%d games available" % self.get_focused_sys_game_count()).center(width),
+        about_win.addstr(1, 0, self._get_about(name, width)[0:width * (height - 1) - 1])
+        about_win.addstr(0, 0, ("%d games available" % self._get_focused_sys_game_count()).center(width),
                          curses.A_STANDOUT)
 
         self.window.border()
@@ -133,11 +135,11 @@ class SystemsHandler(object):
         self.window.addstr(curses.LINES / 2, curses.COLS - 1, '>')
 
 
-    def get_focused_sys_game_count(self):
+    def _get_focused_sys_game_count(self):
         return len(self.sys_focused) if self.sys_focused else 0
 
 
-    def get_about(self, name, width=0):
+    def _get_about(self, name, width=0):
         """Get system about description
         :rtype: str
         """
@@ -146,7 +148,7 @@ class SystemsHandler(object):
             else "System information not available".center(width)
 
 
-    def load_abouts(self):
+    def _load_abouts(self):
         abouts_file = "%s/about.xml" % path.dirname(path.abspath(__file__))
         if not path.isfile(abouts_file):
             self.abouts = {}

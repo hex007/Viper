@@ -8,18 +8,20 @@ from os import system
 
 import renderer
 import theme_handler
+from handler import Handler
+from input_types import KEY
 from renderer import make_win, color
 
 
 __tag__ = 'menu_handler'
 
 _menu_items = (
-    "Switch Carousel", "Switch Color Style", "Test Palette",
+    "Switch Carousel Style", "Switch Color Style", "Test Palette", "Show Logo", "Show Controller",
     "Exit Viper", "Restart System", "Shutdown System"
 )
 
 
-class MenuHandler(object):
+class MenuHandler(Handler):
     """Menu handler: manages menu items and actions"""
 
 
@@ -41,19 +43,17 @@ class MenuHandler(object):
         self.render_item = 0
 
 
-    def input(self, key, keymap):
-        if not key:
+    def input(self, key):
+        if key is None:
             return
-
-        if key in (ord(keymap['select']), ord(keymap['b'])):
+        if key in (KEY.START, KEY.B):
             return self
-
-        if key == ord(keymap['a']):
+        if key == KEY.A:
             return self.execute_focused()
 
-        if key == curses.KEY_DOWN:
+        if key == KEY.DOWN:
             self.render_item = (self.render_item + 1) % len(_menu_items)
-        elif key == curses.KEY_UP:
+        elif key == KEY.UP:
             self.render_item = (self.render_item - 1) if self.render_item > 0 else (len(_menu_items) - 1)
 
 
@@ -79,12 +79,19 @@ class MenuHandler(object):
             theme_handler._carousel_single_color = not theme_handler.is_single_color()
         elif self.render_item == 2:
             renderer.test_palette()
+            return False
         elif self.render_item == 3:
-            raise SystemExit("Exit requested")
+            renderer.draw_loading_screen()
+            return False
         elif self.render_item == 4:
+            renderer.draw_controller()
+            return False
+        elif self.render_item == 5:
+            raise SystemExit("Exit requested")
+        elif self.render_item == 6:
             system("sudo reboot")
             raise SystemExit("Reboot requested")
-        elif self.render_item == 5:
+        elif self.render_item == 7:
             system("sudo halt")
             raise SystemExit("Shutdown requested")
         return self

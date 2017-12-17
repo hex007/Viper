@@ -25,11 +25,12 @@ class CursesHandler():
 
     def curses_init(self):
         # type: () -> bool
-        if self.width < 24 or self.height < 15:
+        if self.width < 16 or self.height < 15:
             print "Error: Field too small\n"
             return False
 
         self.window = curses.initscr()
+        self.window.nodelay(1)
         self.window.keypad(1)
         self.window.clear()
         curses.curs_set(0)
@@ -40,4 +41,3 @@ class CursesHandler():
     def curses_deinit(self):
         curses.endwin()
         self.window = None
-        print "Thank you, have a good day..."

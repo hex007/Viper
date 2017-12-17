@@ -5,6 +5,7 @@
 # `--(Viper ... main)-->
 import locale
 
+import input_handler
 import renderer
 import theme_handler
 from curses_handler import CursesHandler
@@ -16,7 +17,7 @@ __tag__ = 'main'
 if __name__ == '__main__':
     locale.setlocale(locale.LC_ALL, '')
     code = locale.getpreferredencoding()
-
+    error = None
     c_handler = CursesHandler()
     try:
         if c_handler.curses_init():
@@ -27,8 +28,12 @@ if __name__ == '__main__':
 
             frontend = Frontend(c_handler)
             frontend.start()
+            input_handler.start_input_handler(frontend)
 
-    except SystemExit:
-        pass
+    except BaseException as e:
+        error = e
     finally:
         c_handler.curses_deinit()
+        if error:
+            # print type(error)
+            print error.message

@@ -3,10 +3,9 @@
 
 # ,--(Hex)--(11/26/17 12:29 PM)-------------
 # `--(Viper ... frontend)-->
-import curses
 
-import renderer
 import utils
+from handler import Handler
 from systems_handler import SystemsHandler
 
 
@@ -29,53 +28,52 @@ class Frontend(object):
 
         self.settings = None
         self.systems = None
+        self.handlers = None
+
+        self.loop = True
 
 
     def start(self):
         """Blocking call to delegate control to frontend."""
-        # todo : add loading screen (optional)
         self.settings = utils.load_settings()
         self.systems = utils.load_systems(self.settings)
 
         # todo : configure joystick if found
         pass
 
-        self.load_sys_handler()
-        # move to looping for events.
-        self.render_loop()
+        self.handlers = [SystemsHandler(self.systems)]
+        self.handlers[-1].render()
 
 
-    def load_sys_handler(self):
-        self.systems_handler = SystemsHandler(self.systems)
-        self.systems_handler.render()
+    def input(self, key):
+        if self.handlers:
+            self.process(key)
 
 
-    def render_loop(self):
-        handlers = [self.systems_handler]
+    def process(self, key):
+        result = self.handlers[-1].input(key)  # let the view at the top of the stack get the input
 
-        while True:
-            curr_handler = handlers[-1]
-            key = curr_handler.window.getch()
-
-            # todo : Handle menu launching if supported
-            next_handler = curr_handler.input(key, self.settings)  # let the view at the top of the stack get the input
-
-            if isinstance(next_handler, int):  # Child requested key be passed to parent
-                handlers.pop()
-                if handlers:  # check if any handlers are present
-                    handlers[-1].input(next_handler, self.settings)
-                else:
-                    break
-            elif next_handler == curr_handler:  # handler decided to close itself
-                handlers.pop()
-                if handlers:  # check if any handlers are present
-                    handlers[-1].render()
-                else:
-                    break
-            elif next_handler:  # current handler provided a child handler
-                handlers.append(next_handler)
-                next_handler.render()
+        if isinstance(result, tuple):  # Child requested keys be passed to parent
+            self.handlers.pop()
+            if self.handlers:  # check if any handlers are present
+                for key in result:
+                    self.process(key)
             else:
-                curr_handler.render()
+                self.loop = False
 
-        del handlers
+        elif result == self.handlers[-1]:  # handler decided to close itself
+            self.handlers.pop()
+            if self.handlers:  # check if any handlers are present
+                self.handlers[-1].render()
+            else:
+                self.loop = False
+
+        elif isinstance(result, Handler):  # current handler provided a child handler
+            self.handlers.append(result)
+            result.render()
+
+        elif result is False:  # render not needed
+            return
+
+        else:
+            self.handlers[-1].render()

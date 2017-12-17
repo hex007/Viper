@@ -5,10 +5,12 @@
 # `--(Viper ... gamelist_handler)-->
 import curses
 import subprocess
-from time import sleep
 
 import fonts
+import input_handler
 import renderer
+from handler import Handler
+from input_types import KEY
 from menu_handler import MenuHandler
 from system import System
 from theme_handler import get_sys_color
@@ -17,7 +19,7 @@ from theme_handler import get_sys_color
 __tag__ = 'gamelist_handler'
 
 
-class GamelistHandler(object):
+class GamelistHandler(Handler):
     """Handle gamelists population and game execution."""
 
 
@@ -31,56 +33,40 @@ class GamelistHandler(object):
         self.game_focused = system[self.render_game] if system else None
         self.lines = curses.LINES - 4
         self.color = get_sys_color(system.name)
+        self._launch_requested = False
 
 
-    def input(self, key, keymap):
+    def input(self, key):
         """Handle current key press."""
-        if key == ord(keymap['b']):
-            # B button: go back
+        if key == KEY.B:  # Go back
             return self
-        if key == ord(keymap['select']):
-            # Enter the Menu
+        if key == KEY.START:  # Enter the Menu
             return MenuHandler()
-        if key in (curses.KEY_LEFT, curses.KEY_RIGHT):
-            # Support quick system change
-            curses.ungetch(ord(keymap['a']))
-            return key
+        if key in (KEY.LEFT, KEY.RIGHT):  # Support quick system change
+            return key, KEY.A
 
-        if key == curses.KEY_UP:
-            # Scroll up
+        if key == KEY.UP:  # Scroll up
             self.render_game = (self.render_game - 1) if self.render_game > 0 else (len(self.system) - 1)
             self.game_focused = self.system[self.render_game]
-        elif key == curses.KEY_DOWN:
-            # Scroll down
+        elif key == KEY.DOWN:  # Scroll down
             self.render_game = (self.render_game + 1) % len(self.system)
             self.game_focused = self.system[self.render_game]
-        elif key == ord(keymap['a']):
-            # A button: launch game
-            self.launch_focused()
-
-
-    def launch_focused(self):
-        """Launch currently focused game."""
-        # todo : Run command support
-        renderer.alert("Launching ...", False, 18, 3)
-        command = self.system.run_command
-        command = command.replace("%ROM%", '''"%s/%s"''' % (self.system.path, self.game_focused.location))
-        run = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        err = run.communicate()[1]
-        if err and run.returncode:
-            renderer.alert(str(err), True)
-            sleep(5)
-        pass
+        elif key == KEY.A:  # Launch game
+            self._launch_requested = True
 
 
     def render(self):
-        self.window.erase()
-        self.draw_gamelists()
-        self.window.refresh()
+        if self._launch_requested:
+            self._launch_requested = False
+            self._launch_focused()
         pass
 
+        self.window.erase()
+        self._draw_gamelists()
+        self.window.refresh()
 
-    def draw_gamelists(self):
+
+    def _draw_gamelists(self):
         """Page-wise list scrolling
         Decide on the range of games to show and print them.
         """
@@ -99,11 +85,11 @@ class GamelistHandler(object):
             m = self.lines * (self.render_game / self.lines)
             n = min(m + self.lines, len(self.system))
             games = self.system[m:n]
-        self.draw_range(games)
+        self._draw_range(games)
         pass
 
 
-    def draw_range(self, games):
+    def _draw_range(self, games):
         """Print a range of games using not so fancy fonts."""
         x = 0
         v_offset = 4
@@ -119,3 +105,16 @@ class GamelistHandler(object):
         width = min(width, curses.COLS - x)
         if y < curses.LINES:
             self.window.insstr(y, x, name.decode("utf-8").center(width, ' ').encode("utf-8"), t_color)
+
+
+    def _launch_focused(self):
+        """Launch currently focused game."""
+        # todo : Run command support
+        input_handler.clear_queue()
+        renderer.alert("Launching ...", False, 18, 3)
+        command = self.system.run_command
+        command = command.replace("%ROM%", '''"%s/%s"''' % (self.system.path, self.game_focused.location))
+        run = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        err = run.communicate()[1]
+        if run.returncode and err:
+            renderer.alert(str(err), True)

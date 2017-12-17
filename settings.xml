@@ -2,21 +2,38 @@
 <settings>
 
     <!-- PC Settings -->
-    <gamelists_dir>~/roms</gamelists_dir>
-    <systems_conf>~/.emulationstation/es_systems.cfg</systems_conf>
+    <!--<gamelists_dir>~/roms</gamelists_dir>-->
+    <!--<systems_conf>~/.emulationstation/es_systems.cfg</systems_conf>-->
 
     <!-- Pi Settings -->
+    <gamelists_dir>~/.emulationstation/gamelists</gamelists_dir>
+    <systems_conf>/etc/emulationstation/es_systems.cfg</systems_conf>
 
-    <!--<gamelists_dir>~/.emulationstation/gamelists</gamelists_dir>-->
-    <!--<systems_conf>/etc/emulationstation/es_systems.cfg</systems_conf>-->
+    Select either, keyboard for inputs keyboard or gpio buttons, or joystick for usb/bluetooth joystick/gamepad
+    <controller>keyboard</controller>
 
+    <!-- Keyboard Controls -->
+    <keyboard>
+        <a>6</a>
+        <b>2</b>
+        <start>&#10;</start>
+        <select> </select>
+    </keyboard>
+    <!-- // Keyboard Controls -->
 
-    <!-- Controls -->
-    <a>6</a>
-    <b>2</b>
-    <x>8</x>
-    <y>4</y>
+    <!-- Joystick Controls -->
+    <joystick>
+        <device>/dev/input/js1</device>
+        <a>1</a>
+        <b>2</b>
 
-    <select>&#10;</select>
+        <left>20</left>
+        <right>21</right>
+        <up>22</up>
+        <down>23</down>
+        <select>8</select>
+        <start>9</start>
+    </joystick>
+    <!-- // Joystick Controls -->
 
 </settings>
